@@ -1,16 +1,38 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import React from 'react';
-import { useColorScheme } from 'react-native';
+import "../../global.css";
+import { Stack, Redirect, useSegments } from 'expo-router';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useEffect } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { useAuthStore } from '../store/authStore';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+export default function RootLayout() {
+  const { isLoggedIn, isLoading, hydrate } = useAuthStore();
+  const segments = useSegments();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  // Khi mở app, khôi phục token từ AsyncStorage
+  useEffect(() => {
+    hydrate();
+  }, []);
+
+  // Đang kiểm tra token → hiển thị loading
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#f7f9fb' }}>
+        <ActivityIndicator size="large" color="#00687b" />
+      </View>
+    );
+  }
+
+  const inAuthGroup = segments[0] === '(auth)';
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <SafeAreaProvider>
+      {/* Chưa đăng nhập + không ở trang auth → redirect login */}
+      {!isLoggedIn && !inAuthGroup && <Redirect href="/(auth)/login" />}
+      {/* Đã đăng nhập + đang ở trang auth → redirect tabs */}
+      {isLoggedIn && inAuthGroup && <Redirect href="/(tabs)" />}
+
+      <Stack screenOptions={{ headerShown: false }} />
+    </SafeAreaProvider>
   );
 }
