@@ -15,8 +15,8 @@ export function IconButton({
   imageSource,
   label, 
   size = 28, 
-  color = '#00687b', 
-  backgroundColor = '#e0f7fd',
+  color = '#2D8A6B', 
+  backgroundColor = '#F0FDF4',
   className = '',
   ...props 
 }: IconButtonProps) {

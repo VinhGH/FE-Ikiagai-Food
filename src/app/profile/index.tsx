@@ -92,7 +92,7 @@ export default function ProfileScreen() {
             accessibilityLabel="Thêm phương thức thanh toán"
           >
             <View className="w-8 h-8 rounded-full border border-primary items-center justify-center mb-2">
-              <MaterialIcons name="add" size={20} color="#6ed6f2" />
+              <MaterialIcons name="add" size={20} color="#2D8A6B" />
             </View>
             <Text className="text-on-surface text-center text-sm font-medium px-2">Thêm phương thức thanh toán</Text>
           </TouchableOpacity>
@@ -103,7 +103,7 @@ export default function ProfileScreen() {
           <View className="bg-white flex-1 border border-outline-variant rounded-2xl p-4 h-24 relative overflow-hidden shadow-sm">
             <Text className="font-bold text-on-surface text-sm w-2/3">Grab cho Cả Nhà</Text>
             <View className="absolute -bottom-2 -right-2 bg-primary-light w-14 h-14 rounded-full items-center justify-center">
-              <MaterialIcons name="groups" size={28} color="#00687b" />
+              <MaterialIcons name="groups" size={28} color="#2D8A6B" />
             </View>
           </View>
           <View className="bg-white flex-1 border border-outline-variant rounded-2xl p-4 h-24 relative overflow-hidden shadow-sm">

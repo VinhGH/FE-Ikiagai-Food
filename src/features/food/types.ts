@@ -1,42 +1,67 @@
 // ──────────────────────────────────────────────────────────────────
 // features/food/types.ts
-// Khai báo kiểu dữ liệu dùng toàn bộ food feature
+// Khai báo kiểu dữ liệu cho brand, shop/branch, food và toppings
 // ──────────────────────────────────────────────────────────────────
 
-/** Một món ăn / sản phẩm trong app */
+/** Thông tin thương hiệu nhà hàng (VD: Jollibee, KOI Thé) */
+export interface IBrand {
+  id: string;
+  name: string;
+  image: string;
+  categories: string[];
+  rating: number;
+  reviewCount: number;
+  minDeliveryTime: number;
+  deliveryFeeInfo: string;
+}
+
+/** Tùy chọn topping riêng lẻ */
+export interface IToppingOption {
+  id: string;
+  name: string;
+  price: number;
+}
+
+/** Nhóm topping (VD: Thêm Sốt, Chọn Gà) */
+export interface IToppingSection {
+  id: string;
+  title: string;
+  isRequired: boolean;
+  maxSelections?: number;
+  options: IToppingOption[];
+}
+
+/** Một món ăn trong cửa hàng */
 export interface IFood {
   id: string;
   name: string;
-  /** Giá bán (VNĐ) */
   price: number;
-  /** Giá gốc trước giảm (VNĐ), nếu có */
   originalPrice?: number;
-  /** Phần trăm giảm giá, VD: 20 = giảm 20% */
   discount?: number;
   image: string;
   description?: string;
   rating?: number;
-  /** ID của quán / cửa hàng */
-  shopId: string;
+  shopId: string; // Liên kết tới chi nhánh (branch/shop)
   category?: string;
+  toppings?: IToppingSection[];
 }
 
-/** Thông tin quán / cửa hàng */
+/** Thông tin chi nhánh cửa hàng */
 export interface IShop {
   id: string;
-  name: string;
-  image: string;
+  brandId: string; // Liên kết tới Brand
+  name: string;    // Tên chi nhánh (VD: "MM Supercenter Đà Nẵng")
+  image: string;   // Logo
   coverImage: string;
   rating: number;
   reviewCount: number;
-  /** Thời gian giao hàng ước tính (phút) */
   deliveryTime: number;
-  /** Phí giao hàng (VNĐ, 0 = miễn phí) */
   deliveryFee: number;
-  address?: string;
+  address: string;
+  distance: number; // Khoảng cách (km) để sắp xếp gần nhất
+  promotions?: string[]; // Danh sách mã giảm giá
 }
 
-/** Response khi gọi GET /foods */
 export interface FoodsResponse {
   data: IFood[];
   total: number;

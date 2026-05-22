@@ -5,11 +5,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "primary": "#6ed6f2",
-        "primary-dark": "#00687b",
-        "primary-light": "#e0f7fd",
-        "primary-container": "#e0f7fd",
-        "on-primary-container": "#00687b",
+        "primary": "#2D8A6B",
+        "primary-dark": "#0F5B47",
+        "primary-light": "#F0FDF4",
+        "primary-container": "#E8F5E9",
+        "on-primary-container": "#0F5B47",
         "surface-container-low": "#F9FAFB",
         "outline-variant": "#E5E7EB",
         "outline": "#9CA3AF",

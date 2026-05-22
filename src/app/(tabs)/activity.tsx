@@ -47,7 +47,7 @@ export default function ActivityScreen() {
             <View className="bg-white rounded-2xl p-4 mb-4 shadow-sm border border-outline-variant">
               <View className="flex-row justify-between items-center mb-3 border-b border-outline-variant pb-3">
                 <View className="flex-row items-center">
-                  <MaterialIcons name="restaurant" size={20} color="#00687b" />
+                  <MaterialIcons name="restaurant" size={20} color="#2D8A6B" />
                   <Text className="ml-2 font-bold text-on-surface text-base">Jollibee - EC Đống Đa</Text>
                 </View>
                 <Text className="text-xs text-on-surface-variant">12 Th5 10:30</Text>
@@ -83,7 +83,7 @@ export default function ActivityScreen() {
             <View className="bg-white rounded-2xl p-4 mb-8 shadow-sm border border-outline-variant">
               <View className="flex-row justify-between items-center mb-3 border-b border-outline-variant pb-3">
                 <View className="flex-row items-center">
-                  <MaterialIcons name="local-cafe" size={20} color="#00687b" />
+                  <MaterialIcons name="local-cafe" size={20} color="#2D8A6B" />
                   <Text className="ml-2 font-bold text-on-surface text-base">KOI Thé - Nguyễn Văn Linh</Text>
                 </View>
                 <Text className="text-xs text-on-surface-variant">10 Th5 14:15</Text>

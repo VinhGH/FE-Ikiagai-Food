@@ -69,8 +69,16 @@ export function FoodCard({ item }: { item: FoodItem }) {
             onPress={(e) => {
               // Prevent card navigation when tapping add button
               e.stopPropagation();
+              // Import/Access cart store directly
+              const { useCartStore } = require('../../../store/cartStore');
+              const { Alert } = require('react-native');
+              useCartStore.getState().addToCart({
+                ...item,
+                shopId: 'shop-1', // Default shop fallback
+              }, 1);
+              Alert.alert('Thành công', `Đã thêm 1x ${item.name} vào giỏ hàng!`);
             }}
-            className="w-8 h-8 bg-primary-container rounded-full items-center justify-center"
+            className="w-8 h-8 bg-primary-container rounded-full items-center justify-center border border-primary/20"
           >
             <Text className="text-on-primary-container text-lg font-bold leading-none">
               +
