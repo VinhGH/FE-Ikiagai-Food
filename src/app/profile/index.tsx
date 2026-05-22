@@ -1,36 +1,65 @@
+// ──────────────────────────────────────────────────────────────────
+// app/profile/index.tsx  ← chỉ render, data từ useUserProfile()
+// ──────────────────────────────────────────────────────────────────
+
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useUserProfile } from '../../features/profile/hooks/useUserProfile';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { user, logout } = useUserProfile();
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace('/(auth)/login');
+  };
 
   return (
     <View className="flex-1 bg-background">
       {/* Header */}
       <View className="bg-primary-dark pt-14 pb-4 px-4 flex-row items-center">
-        <TouchableOpacity onPress={() => router.back()} className="mr-4">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="mr-4 w-11 h-11 items-center justify-center"
+          accessibilityLabel="Quay lại"
+          accessibilityRole="button"
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
           <MaterialIcons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         <Text className="text-white text-xl font-bold flex-1">Tài khoản</Text>
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Profile Card */}
+        {/* Profile Card – data từ authStore qua useUserProfile */}
         <View className="bg-white rounded-2xl mx-4 mt-6 p-4 shadow-sm border border-outline-variant relative">
           <View className="flex-row items-center mb-4">
             <View className="w-16 h-16 bg-primary rounded-full items-center justify-center mr-4">
               <MaterialIcons name="person" size={40} color="white" />
             </View>
             <View className="flex-1">
-              <Text className="text-2xl font-extrabold text-on-surface">Vinh Thái</Text>
+              {/* Hiển thị tên từ store, fallback về "Khách" nếu chưa login */}
+              <Text className="text-2xl font-extrabold text-on-surface">
+                {user?.name ?? 'Khách'}
+              </Text>
+              {user?.email ? (
+                <Text className="text-sm text-on-surface-variant mt-0.5">
+                  {user.email}
+                </Text>
+              ) : null}
             </View>
-            <TouchableOpacity className="bg-primary-light px-4 py-2 rounded-full">
+            <TouchableOpacity
+              className="bg-primary-light px-4 py-2 rounded-full min-h-[44px] justify-center"
+              activeOpacity={0.7}
+              accessibilityLabel="Chỉnh sửa hồ sơ"
+            >
               <Text className="text-primary font-bold">Hồ sơ</Text>
             </TouchableOpacity>
           </View>
           
-          <View className="flex-row gap-2">
+          <View className="flex-row gap-2 flex-wrap">
             <View className="border border-outline-variant px-3 py-1.5 rounded-full flex-row items-center">
               <MaterialIcons name="all-inclusive" size={16} color="#F59E0B" />
               <Text className="text-xs text-on-surface-variant font-medium ml-1">Gói GrabUnlimited</Text>
@@ -57,7 +86,11 @@ export default function ProfileScreen() {
             </View>
           </View>
 
-          <TouchableOpacity className="bg-white border border-outline-variant rounded-2xl w-40 h-32 p-4 mr-4 shadow-sm justify-center items-center">
+          <TouchableOpacity
+            className="bg-white border border-outline-variant rounded-2xl w-40 h-32 p-4 mr-4 shadow-sm justify-center items-center"
+            activeOpacity={0.7}
+            accessibilityLabel="Thêm phương thức thanh toán"
+          >
             <View className="w-8 h-8 rounded-full border border-primary items-center justify-center mb-2">
               <MaterialIcons name="add" size={20} color="#6ed6f2" />
             </View>
@@ -82,30 +115,41 @@ export default function ProfileScreen() {
         </View>
 
         {/* Ưu đãi và tiết kiệm */}
-        <View className="bg-white mt-8 mb-12">
+        <View className="bg-white mt-8">
           <Text className="text-xl font-extrabold text-on-surface px-4 py-4 border-b border-outline-variant">Ưu đãi và tiết kiệm</Text>
           
-          <TouchableOpacity className="flex-row items-center justify-between px-4 py-4 border-b border-outline-variant">
-            <Text className="text-base text-on-surface font-medium">GrabXu</Text>
-            <View className="flex-row items-center">
-              <Text className="text-on-surface-variant mr-2">0 GrabXu</Text>
-              <MaterialIcons name="chevron-right" size={24} color="#9CA3AF" />
-            </View>
-          </TouchableOpacity>
+          {[
+            { label: 'GrabXu', suffix: '0 GrabXu' },
+            { label: 'Gói Hội Viên', suffix: null },
+            { label: 'Rewards', suffix: null },
+            { label: 'Thử thách', suffix: null },
+          ].map(({ label, suffix }) => (
+            <TouchableOpacity
+              key={label}
+              className="flex-row items-center justify-between px-4 py-4 border-b border-outline-variant min-h-[56px]"
+              activeOpacity={0.7}
+            >
+              <Text className="text-base text-on-surface font-medium">{label}</Text>
+              <View className="flex-row items-center">
+                {suffix ? (
+                  <Text className="text-on-surface-variant mr-2">{suffix}</Text>
+                ) : null}
+                <MaterialIcons name="chevron-right" size={24} color="#9CA3AF" />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-          <TouchableOpacity className="flex-row items-center justify-between px-4 py-4 border-b border-outline-variant">
-            <Text className="text-base text-on-surface font-medium">Gói Hội Viên</Text>
-            <MaterialIcons name="chevron-right" size={24} color="#9CA3AF" />
-          </TouchableOpacity>
-
-          <TouchableOpacity className="flex-row items-center justify-between px-4 py-4 border-b border-outline-variant">
-            <Text className="text-base text-on-surface font-medium">Rewards</Text>
-            <MaterialIcons name="chevron-right" size={24} color="#9CA3AF" />
-          </TouchableOpacity>
-
-          <TouchableOpacity className="flex-row items-center justify-between px-4 py-4 border-b border-outline-variant">
-            <Text className="text-base text-on-surface font-medium">Thử thách</Text>
-            <MaterialIcons name="chevron-right" size={24} color="#9CA3AF" />
+        {/* Đăng xuất */}
+        <View className="px-4 mt-6 mb-12">
+          <TouchableOpacity
+            onPress={handleLogout}
+            className="border border-red-300 rounded-2xl py-4 items-center min-h-[56px] justify-center"
+            activeOpacity={0.7}
+            accessibilityLabel="Đăng xuất"
+            accessibilityRole="button"
+          >
+            <Text className="text-red-500 font-bold text-base">Đăng xuất</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
