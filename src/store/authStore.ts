@@ -8,16 +8,9 @@ import {
   removeUserData,
   clearAllStorage,
 } from '../lib/storage';
+import type { User } from '../types/api';
 
 // ===== TYPES =====
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  avatar?: string;
-};
-
 type AuthState = {
   // State
   token: string | null;
@@ -26,7 +19,7 @@ type AuthState = {
   isLoading: boolean; // Đang kiểm tra token từ storage khi mở app
 
   // Actions
-  login: (token: string, user: User) => Promise<void>;
+  login: (accessToken: string, refreshToken: string, user: User) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: User) => void;
   hydrate: () => Promise<void>; // Khôi phục token từ AsyncStorage khi mở app
@@ -41,11 +34,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: true,
 
   // Đăng nhập: lưu token + user vào cả store & AsyncStorage
-  login: async (token: string, user: User) => {
-    await saveToken(token);
+  login: async (accessToken: string, refreshToken: string, user: User) => {
+    await saveToken(accessToken, refreshToken);
     await saveUserData(user as unknown as Record<string, unknown>);
     set({
-      token,
+      token: accessToken,
       user,
       isLoggedIn: true,
     });

@@ -1,9 +1,25 @@
+import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useRegister } from '../hooks/useRegister';
 
 export function RegisterForm() {
   const router = useRouter();
+  const { register, isLoading, error } = useRegister();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleRegister = async () => {
+    await register({
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim() || undefined,
+      password,
+    });
+  };
 
   return (
     <View className="flex-1 w-full justify-center">
@@ -22,6 +38,8 @@ export function RegisterForm() {
               className="w-full pl-12 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg text-base text-on-surface"
               placeholder="Nguyễn Văn A"
               placeholderTextColor="#6e797d"
+              value={name}
+              onChangeText={setName}
             />
           </View>
         </View>
@@ -37,6 +55,8 @@ export function RegisterForm() {
               keyboardType="email-address"
               autoCapitalize="none"
               placeholderTextColor="#6e797d"
+              value={email}
+              onChangeText={setEmail}
             />
           </View>
         </View>
@@ -51,6 +71,8 @@ export function RegisterForm() {
               placeholder="0123 456 789"
               keyboardType="phone-pad"
               placeholderTextColor="#6e797d"
+              value={phone}
+              onChangeText={setPhone}
             />
           </View>
         </View>
@@ -65,6 +87,8 @@ export function RegisterForm() {
               placeholder="••••••••"
               secureTextEntry
               placeholderTextColor="#6e797d"
+              value={password}
+              onChangeText={setPassword}
             />
             <TouchableOpacity className="absolute z-10" style={{ position: 'absolute', right: 16 }}>
               <MaterialIcons name="visibility" size={20} color="#6e797d" />
@@ -72,9 +96,17 @@ export function RegisterForm() {
           </View>
         </View>
 
+        {error && (
+          <Text className="text-red-600 text-sm mt-3">{error}</Text>
+        )}
+
         {/* Submit Button */}
-        <TouchableOpacity className="w-full py-4 bg-primary-container rounded-lg items-center mt-6 shadow-sm active:opacity-80">
-          <Text className="text-on-primary-container text-lg font-bold">Đăng ký ngay</Text>
+        <TouchableOpacity
+          className={`w-full py-4 bg-primary-container rounded-lg items-center mt-6 shadow-sm active:opacity-80 ${isLoading ? 'opacity-60' : ''}`}
+          onPress={handleRegister}
+          disabled={isLoading}
+        >
+          <Text className="text-on-primary-container text-lg font-bold">{isLoading ? 'Đang đăng ký...' : 'Đăng ký ngay'}</Text>
         </TouchableOpacity>
       </View>
 

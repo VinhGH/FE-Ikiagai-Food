@@ -1,17 +1,13 @@
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useCartStore } from '../../../store/cartStore';
+import type { Food } from '../../../types/api';
 
-export type FoodItem = {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  discount?: number;
-};
+export type FoodItem = Food;
 
 export function FoodCard({ item }: { item: FoodItem }) {
   const router = useRouter();
+  const addItem = useCartStore((s) => s.addItem);
 
   const formattedPrice = item.price.toLocaleString('vi-VN');
   const formattedOriginalPrice = item.originalPrice?.toLocaleString('vi-VN');
@@ -69,6 +65,7 @@ export function FoodCard({ item }: { item: FoodItem }) {
             onPress={(e) => {
               // Prevent card navigation when tapping add button
               e.stopPropagation();
+              addItem({ food: item });
             }}
             className="w-8 h-8 bg-primary-container rounded-full items-center justify-center"
           >

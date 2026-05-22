@@ -1,25 +1,17 @@
+import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useAuthStore } from '../../../store/authStore';
+import { useLoginAuth } from '../hooks/useLoginAuth';
 
 export function LoginForm() {
   const router = useRouter();
-  const login = useAuthStore((s) => s.login);
+  const { login, isLoading, error } = useLoginAuth();
+  const [email, setEmail] = useState('thaole@gmail.com');
+  const [password, setPassword] = useState('Password123');
 
   const handleLogin = async () => {
-    // TODO: Thay bằng API đăng nhập thật (gửi email + password lên server)
-    // Hiện tại dùng token giả để test luồng
-    const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.fake-token';
-    const fakeUser = {
-      id: '1',
-      name: 'Thao Le',
-      email: 'thaole@gmail.com',
-      phone: '0123456789',
-    };
-
-    await login(fakeToken, fakeUser);
-    // Không cần router.replace vì _layout.tsx sẽ tự redirect khi isLoggedIn = true
+    await login(email.trim(), password);
   };
 
   return (
@@ -41,6 +33,8 @@ export function LoginForm() {
               keyboardType="email-address"
               autoCapitalize="none"
               placeholderTextColor="#6e797d"
+              value={email}
+              onChangeText={setEmail}
             />
           </View>
         </View>
@@ -55,6 +49,8 @@ export function LoginForm() {
               placeholder="••••••••"
               secureTextEntry
               placeholderTextColor="#6e797d"
+              value={password}
+              onChangeText={setPassword}
             />
             <TouchableOpacity className="absolute z-10" style={{ position: 'absolute', right: 16 }}>
               <MaterialIcons name="visibility" size={20} color="#6e797d" />
@@ -66,12 +62,17 @@ export function LoginForm() {
             <Text className="text-primary font-medium">Quên mật khẩu?</Text>
         </TouchableOpacity>
 
+        {error && (
+          <Text className="text-red-600 text-sm mt-3">{error}</Text>
+        )}
+
         {/* Submit Button */}
         <TouchableOpacity 
-          className="w-full py-4 bg-primary-container rounded-lg items-center mt-6 shadow-sm active:opacity-80"
+          className={`w-full py-4 bg-primary-container rounded-lg items-center mt-6 shadow-sm active:opacity-80 ${isLoading ? 'opacity-60' : ''}`}
           onPress={handleLogin}
+          disabled={isLoading}
         >
-          <Text className="text-on-primary-container text-lg font-bold">Đăng nhập</Text>
+          <Text className="text-on-primary-container text-lg font-bold">{isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}</Text>
         </TouchableOpacity>
       </View>
 

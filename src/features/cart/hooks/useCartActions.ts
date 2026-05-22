@@ -1,2 +1,5 @@
-﻿// hello word Thao Le
-export const test = 'hello word Thao Le';
+import { useCartStore } from '../../../store/cartStore';
+
+export function useCartActions() {
+  return useCartStore();
+}
