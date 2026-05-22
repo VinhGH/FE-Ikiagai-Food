@@ -105,7 +105,7 @@ export default function CartPage() {
             { text: 'Bỏ qua', style: 'cancel' },
             { 
               text: 'Nạp tiền ngay', 
-              onPress: () => router.push('/payment/methods') 
+              onPress: () => router.push('/payment/methods' as any) 
             }
           ]
         );
@@ -167,7 +167,7 @@ export default function CartPage() {
           {
             text: 'Theo dõi đơn hàng',
             onPress: () => {
-              router.push('/activity');
+              router.push('/(tabs)/activity' as any);
             }
           }
         ]
@@ -421,7 +421,7 @@ export default function CartPage() {
 
         {/* 4. Payment Method Selection */}
         <TouchableOpacity 
-          onPress={() => router.push('/payment/methods')}
+          onPress={() => router.push('/payment/methods' as any)}
           className="bg-white rounded-2xl p-4 mb-4 border border-slate-100 shadow-sm flex-row items-center justify-between"
           activeOpacity={0.7}
         >

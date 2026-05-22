@@ -31,7 +31,7 @@ export function FoodCategorySection({
   onSelectCategory,
 }: FoodCategorySectionProps) {
   return (
-    <View className="py-4 bg-white rounded-b-3xl shadow-sm mb-4">
+    <View className="py-4 bg-white rounded-3xl border-2 border-[#6ed6f2]/20 shadow-sm mt-3.5 mb-4">
       {/* 4 Danh mục lớn dạng hình tròn */}
       <View className="flex-row justify-around px-2 mb-5">
         {MAIN_CATEGORIES.map((cat) => {
@@ -42,7 +42,7 @@ export function FoodCategorySection({
               key={cat.id || 'all'}
               activeOpacity={0.85}
               onPress={() => onSelectCategory(cat.id)}
-              className="items-center"
+              className="items-center hover-transition hover:scale-105"
             >
               <View 
                 className={`w-16 h-16 rounded-full items-center justify-center shadow-sm border ${
@@ -67,7 +67,10 @@ export function FoodCategorySection({
 
       {/* Lưới thẻ ưu đãi cuộn ngang */}
       <View className="mb-2">
-        <Text className="text-sm font-black text-slate-800 uppercase tracking-wider mb-3 px-4">Ưu đãi hôm nay</Text>
+        <View className="flex-row items-center gap-1.5 mb-3 px-4">
+          <MaterialIcons name="local-offer" size={16} color="#6ed6f2" />
+          <Text className="text-sm font-black text-slate-800 uppercase tracking-wider">Ưu đãi hôm nay</Text>
+        </View>
         
         <ScrollView
           horizontal
@@ -78,7 +81,7 @@ export function FoodCategorySection({
             <TouchableOpacity
               key={idx}
               activeOpacity={0.8}
-              className={`w-32 h-[80px] p-3 rounded-2xl border ${badge.color} relative overflow-hidden flex-col justify-between`}
+              className={`w-32 h-[80px] p-3 rounded-2xl border ${badge.color} relative overflow-hidden flex-col justify-between hover-transition hover:scale-105 hover:shadow-sm active:scale-[0.97]`}
               onPress={() => onSelectCategory(
                 idx === 0 || idx === 5 ? 'Cơm Tấm' : 
                 idx === 1 || idx === 6 ? 'Trà Sữa' : 

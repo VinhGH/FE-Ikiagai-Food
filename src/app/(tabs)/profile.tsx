@@ -126,14 +126,14 @@ export default function ProfilePage() {
             <Text className="text-xs font-black text-slate-800">Thanh toán</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity className="flex-1 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm items-center">
+          <TouchableOpacity onPress={() => router.push('/profile/business' as any)} className="flex-1 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm items-center" activeOpacity={0.7}>
             <View className="w-9 h-9 rounded-full bg-teal-50 items-center justify-center mb-1.5">
               <MaterialIcons name="business-center" size={18} color="#0D9488" />
             </View>
             <Text className="text-xs font-black text-slate-800" numberOfLines={1}>Doanh nghiệp</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-1 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm items-center">
+          <TouchableOpacity onPress={() => router.push('/profile/addresses' as any)} className="flex-1 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm items-center" activeOpacity={0.7}>
             <View className="w-9 h-9 rounded-full bg-emerald-50 items-center justify-center mb-1.5">
               <MaterialIcons name="home" size={18} color="#059669" />
             </View>
@@ -192,9 +192,9 @@ export default function ProfilePage() {
         {/* SECTION: Thông tin cá nhân */}
         <View className="mx-4 mt-3 bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
           <Text className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Thông tin cá nhân</Text>
-          <MenuItem icon="history" label="Lịch sử hoạt động" onPress={() => router.push('/activity')} />
+          <MenuItem icon="history" label="Lịch sử hoạt động" onPress={() => router.push('/(tabs)/activity' as any)} />
           <MenuItem icon="receipt" label="Thông tin hoá đơn" />
-          <MenuItem icon="pin-drop" label="Địa chỉ đã lưu" />
+          <MenuItem icon="pin-drop" label="Địa chỉ đã lưu" onPress={() => router.push('/profile/addresses' as any)} />
         </View>
 
         {/* SECTION: Hỗ trợ */}

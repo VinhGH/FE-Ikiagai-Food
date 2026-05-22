@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Animated,
 } from 'react-native';
-import { memo, useCallback, useState, useMemo, useEffect } from 'react';
+import { memo, useCallback, useState, useMemo, useEffect, useRef } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { HomeHeader, FoodCategorySection, PromoBanner, useHomeFeed } from '../../features/home';
 import { getFoods, IBrand, IFood } from '../../features/food';
@@ -43,7 +44,7 @@ const BrandItem = memo(({ item }: { item: IBrand }) => {
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={() => router.push(`/restaurant/${item.id}` as any)}
-      className="bg-white rounded-3xl border border-slate-100 shadow-sm p-3.5 flex-row gap-3.5 mb-3.5"
+      className="bg-white rounded-3xl border border-slate-100 shadow-sm p-3.5 flex-row gap-3.5 mb-3.5 hover-transition hover:scale-[1.015] hover:shadow-md hover:border-[#6ed6f2]/30 active:scale-[0.995]"
     >
       {/* Brand Logo/Image */}
       <View className="relative w-24 h-24 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100">
@@ -149,6 +150,7 @@ function EmptyState({ onRetry }: { onRetry: () => void }) {
 // ── Screen ─────────────────────────────────────────────────────────
 export default function HomeScreen() {
   const router = useRouter();
+  const scrollY = useRef(new Animated.Value(0)).current;
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const { brands, isLoading, error, refetch } = useHomeFeed();
   const [foods, setFoods] = useState<IFood[]>([]);
@@ -222,7 +224,7 @@ export default function HomeScreen() {
                 <TouchableOpacity
                   key={food.id}
                   activeOpacity={0.9}
-                  className="w-32 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm"
+                  className="w-32 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover-transition hover:scale-[1.04] hover:shadow-md hover:border-[#6ed6f2]/30 active:scale-[0.97]"
                   onPress={() => router.push(`/food/${food.id}` as any)}
                 >
                   <View className="relative w-full h-32 bg-slate-50">
@@ -268,7 +270,7 @@ export default function HomeScreen() {
                 <TouchableOpacity
                   key={food.id}
                   activeOpacity={0.9}
-                  className="w-36 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm flex-row p-2 gap-2 h-20 items-center"
+                  className="w-36 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm flex-row p-2 gap-2 h-20 items-center hover-transition hover:scale-[1.04] hover:shadow-md hover:border-[#6ed6f2]/30 active:scale-[0.97]"
                   onPress={() => router.push(`/food/${food.id}` as any)}
                 >
                   <View className="w-16 h-16 rounded-xl bg-slate-50 overflow-hidden relative">
@@ -313,7 +315,7 @@ export default function HomeScreen() {
               <TouchableOpacity
                 key={brand.id}
                 activeOpacity={0.9}
-                className="w-40 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm p-3 items-center"
+                className="w-40 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm p-3 items-center hover-transition hover:scale-[1.04] hover:shadow-md hover:border-[#6ed6f2]/30 active:scale-[0.97]"
                 onPress={() => router.push(`/restaurant/${brand.id}` as any)}
               >
                 <View className="w-16 h-16 rounded-full overflow-hidden bg-slate-50 border border-slate-100 mb-2">
@@ -351,7 +353,7 @@ export default function HomeScreen() {
                 <TouchableOpacity
                   key={food.id}
                   activeOpacity={0.9}
-                  className="w-32 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm"
+                  className="w-32 bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover-transition hover:scale-[1.04] hover:shadow-md hover:border-[#6ed6f2]/30 active:scale-[0.97]"
                   onPress={() => router.push(`/food/${food.id}` as any)}
                 >
                   <View className="w-full h-32 bg-slate-50 relative">
@@ -392,15 +394,21 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-[#F9FAFB]">
-      <HomeHeader />
+      <HomeHeader scrollY={scrollY} />
 
-      <FlatList
+      <Animated.FlatList
         data={filteredBrands}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
+        contentContainerStyle={{ paddingTop: 156, paddingHorizontal: 16, paddingBottom: 32 }}
         ListHeaderComponent={renderHeader}
         showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+        progressViewOffset={156}
 
         ListEmptyComponent={
           isLoading ? (
