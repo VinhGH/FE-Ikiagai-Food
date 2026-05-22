@@ -115,7 +115,11 @@ export default function ProfilePage() {
 
         {/* Quick Action Cards (Thanh toán, Ví Ikigai, Địa chỉ đã lưu) */}
         <View className="flex-row px-4 mt-3 gap-3">
-          <TouchableOpacity className="flex-1 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm items-center">
+          <TouchableOpacity 
+            onPress={() => router.push('/payment/methods')}
+            className="flex-1 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm items-center"
+            activeOpacity={0.7}
+          >
             <View className="w-9 h-9 rounded-full bg-blue-50 items-center justify-center mb-1.5">
               <MaterialIcons name="account-balance-wallet" size={18} color="#2563EB" />
             </View>

@@ -3,68 +3,23 @@ import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-
-// MOCK DATA for Messages
-const CHAT_LIST = [
-  {
-    id: '1',
-    name: 'Tài xế Nguyễn Văn A',
-    avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=150&q=80',
-    lastMessage: 'Tôi đã lấy món xong, đang trên đường giao cho bạn nhé.',
-    time: '12:05',
-    unreadCount: 1,
-    role: 'Shipper',
-    roleColor: 'bg-green-100',
-    roleTextColor: 'text-green-700',
-  },
-  {
-    id: '4',
-    name: 'Tài xế Lê B',
-    avatar: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&w=150&q=80',
-    lastMessage: 'Đã giao hàng thành công. Chúc bạn ngon miệng!',
-    time: '10/05',
-    unreadCount: 0,
-    role: 'Shipper',
-    roleColor: 'bg-green-100',
-    roleTextColor: 'text-green-700',
-  },
-  {
-    id: '2',
-    name: 'C&N - Cà Phê Tui Pha',
-    avatar: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=150&q=80',
-    lastMessage: 'Dạ quán đã nhận được ghi chú của bạn rồi ạ!',
-    time: '11:50',
-    unreadCount: 1,
-    role: 'Nhà hàng',
-    roleColor: 'bg-amber-100',
-    roleTextColor: 'text-amber-700',
-  },
-  {
-    id: '3',
-    name: 'Hỗ trợ Ikigai Food',
-    avatar: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=150&q=80',
-    lastMessage: 'Cảm ơn bạn đã phản hồi, chúng tôi sẽ xử lý ngay.',
-    time: 'Hôm qua',
-    unreadCount: 0,
-    role: 'Hỗ trợ',
-    roleColor: 'bg-sky-100',
-    roleTextColor: 'text-sky-700',
-  }
-];
+import { useMessageStore } from '../../store/messageStore';
 
 export default function MessagesScreen() {
+  const { chats, markAsRead, getUnreadCount } = useMessageStore();
   const [activeTab, setActiveTab] = useState('messages');
   const [activeFilter, setActiveFilter] = useState('all'); // all | shipper | restaurant
 
-  const shippers = CHAT_LIST.filter(c => c.role === 'Shipper');
-  const restaurants = CHAT_LIST.filter(c => c.role === 'Nhà hàng');
-  const others = CHAT_LIST.filter(c => c.role === 'Hỗ trợ');
+  const shippers = chats.filter(c => c.role === 'Shipper');
+  const restaurants = chats.filter(c => c.role === 'Nhà hàng');
+  const others = chats.filter(c => c.role === 'Hỗ trợ');
 
   const renderChatItem = (chat: any) => (
     <TouchableOpacity 
       key={chat.id} 
       className="flex-row items-center px-4 py-4 border-b border-slate-50 bg-white"
       activeOpacity={0.7}
+      onPress={() => markAsRead(chat.id)}
     >
       {/* Avatar */}
       <View className="relative">
@@ -135,7 +90,7 @@ export default function MessagesScreen() {
           onPress={() => setActiveTab('messages')}
         >
           <Text className={`text-center font-bold ${activeTab === 'messages' ? 'text-[#6ed6f2]' : 'text-slate-500 font-medium'}`}>
-            Tin nhắn (2)
+            Tin nhắn ({getUnreadCount()})
           </Text>
         </TouchableOpacity>
         <TouchableOpacity 

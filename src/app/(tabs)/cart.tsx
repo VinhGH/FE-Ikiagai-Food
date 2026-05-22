@@ -5,17 +5,20 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useCartStore } from '../../store/cartStore';
 import { useOrderStore } from '../../store/orderStore';
+import { usePaymentStore } from '../../store/paymentStore';
+import { useMessageStore } from '../../store/messageStore';
 import { MOCK_SHOPS } from '../../features/food/api/foodApi';
 
 export default function CartPage() {
   const router = useRouter();
   const { cartItems, updateQuantity, removeFromCart, clearCart, getTotalPrice } = useCartStore();
   const { addOrder } = useOrderStore();
+  const { selectedMethod, egreenBalance, deductEGreen, addTransaction, paymentMethods } = usePaymentStore();
+  const { addMessage } = useMessageStore();
 
   const [isOrdering, setIsOrdering] = useState(false);
   const [driverNote, setDriverNote] = useState('Gửi xe bảo vệ, đi thang máy lên tầng 3. Gọi điện khi tới.');
   const [selectedVoucher, setSelectedVoucher] = useState<'FREESHIP' | 'IKIGAIFOOD' | 'IKIGAI50' | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'ikigai' | 'momo' | 'card'>('cash');
 
   const subtotal = getTotalPrice();
 
@@ -43,6 +46,14 @@ export default function CartPage() {
   }
 
   const finalTotal = Math.max(0, subtotal + deliveryFee + platformFee - voucherDiscount);
+
+  const currentPayment = paymentMethods.find(m => m.id === selectedMethod) || {
+    id: 'cash',
+    name: 'Tiền mặt khi nhận hàng (COD)',
+    type: 'other' as const,
+    icon: 'money',
+    detail: ''
+  };
 
   const handleApplyVoucher = (code: 'FREESHIP' | 'IKIGAIFOOD' | 'IKIGAI50') => {
     if (selectedVoucher === code) {
@@ -84,10 +95,41 @@ export default function CartPage() {
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
 
+    // Check E-Green balance
+    if (selectedMethod === 'egreen') {
+      if (egreenBalance < finalTotal) {
+        Alert.alert(
+          'Số dư không đủ',
+          `Số dư Thẻ E-Green của bạn (${egreenBalance.toLocaleString('vi-VN')}đ) không đủ để thanh toán đơn hàng này (${finalTotal.toLocaleString('vi-VN')}đ). Vui lòng nạp thêm tiền!`,
+          [
+            { text: 'Bỏ qua', style: 'cancel' },
+            { 
+              text: 'Nạp tiền ngay', 
+              onPress: () => router.push('/payment/methods') 
+            }
+          ]
+        );
+        return;
+      }
+    }
+
     setIsOrdering(true);
 
     // Simulate ordering network process
     setTimeout(() => {
+      // Deduct from E-Green or record transaction
+      if (selectedMethod === 'egreen') {
+        deductEGreen(finalTotal);
+      } else {
+        // Record payment transaction for other methods
+        addTransaction(
+          `Thanh toán đơn hàng - ${shop.name}`,
+          -finalTotal,
+          'payment',
+          selectedMethod
+        );
+      }
+
       // Prepare items list for orderStore
       const orderItems = cartItems.map((item) => {
         let nameWithToppings = item.food.name;
@@ -106,6 +148,13 @@ export default function CartPage() {
 
       // Add to global ongoing orders
       addOrder(shop.name, shop.image, orderItems, finalTotal);
+
+      // Trigger dynamic messages in app
+      // Send message from Restaurant (chat id: '2')
+      addMessage('2', `Cửa hàng đã nhận được đơn hàng của bạn trị giá ${finalTotal.toLocaleString('vi-VN')}đ. Chúng tôi đang chuẩn bị chế biến.`);
+      
+      // Send message from Shipper (chat id: '1')
+      addMessage('1', `Tôi nhận đơn giao từ cửa hàng ${shop.name}. Đơn đã thanh toán qua ${currentPayment.name}. Tôi đang đi lấy món.`);
 
       // Clear local cart
       clearCart();
@@ -371,68 +420,40 @@ export default function CartPage() {
         </View>
 
         {/* 4. Payment Method Selection */}
-        <View className="bg-white rounded-2xl p-4 mb-4 border border-slate-100 shadow-sm">
-          <View className="flex-row items-center mb-3">
-            <View className="w-8 h-8 rounded-full bg-teal-50 items-center justify-center mr-2.5">
-              <MaterialIcons name="account-balance-wallet" size={18} color="#0d9488" />
+        <TouchableOpacity 
+          onPress={() => router.push('/payment/methods')}
+          className="bg-white rounded-2xl p-4 mb-4 border border-slate-100 shadow-sm flex-row items-center justify-between"
+          activeOpacity={0.7}
+        >
+          <View className="flex-row items-center flex-1 mr-2">
+            <View className="w-8 h-8 rounded-full bg-cyan-50 items-center justify-center mr-2.5">
+              <MaterialIcons 
+                name={
+                  currentPayment.icon === 'eco' || currentPayment.id === 'egreen' ? 'eco' :
+                  currentPayment.icon === 'money' || currentPayment.id === 'cash' ? 'money' :
+                  currentPayment.icon === 'credit-card' ? 'credit-card' : 'payment'
+                } 
+                size={18} 
+                color="#00b4d8" 
+              />
             </View>
-            <View>
-              <Text className="text-xs font-black text-slate-800">Phương thức thanh toán</Text>
-              <Text className="text-[10px] text-slate-400 font-bold mt-0.5">Chọn cách thức thanh toán đơn hàng</Text>
+            <View className="flex-1">
+              <Text className="text-[10px] text-slate-400 font-bold">Phương thức thanh toán</Text>
+              <Text className="text-xs font-black text-slate-800 mt-0.5">
+                {currentPayment.name} {currentPayment.detail ? `(${currentPayment.detail})` : ''}
+              </Text>
+              {currentPayment.id === 'egreen' && (
+                <Text className="text-[9px] text-teal-600 font-black mt-0.5">
+                  Số dư ví: {egreenBalance.toLocaleString('vi-VN')}đ
+                </Text>
+              )}
             </View>
           </View>
-
-          {/* Payment grid */}
-          <View className="gap-2.5">
-            <TouchableOpacity 
-              onPress={() => setPaymentMethod('cash')}
-              className={`flex-row items-center justify-between p-3 rounded-xl border ${paymentMethod === 'cash' ? 'border-[#6ed6f2] bg-sky-50/30' : 'border-slate-100'}`}
-              activeOpacity={0.7}
-            >
-              <View className="flex-row items-center">
-                <MaterialIcons name="money" size={18} color="#64748B" />
-                <Text className="text-xs font-bold text-slate-700 ml-2.5">Tiền mặt khi nhận hàng (COD)</Text>
-              </View>
-              {paymentMethod === 'cash' && <MaterialIcons name="check-circle" size={18} color="#00b4d8" />}
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              onPress={() => setPaymentMethod('ikigai')}
-              className={`flex-row items-center justify-between p-3 rounded-xl border ${paymentMethod === 'ikigai' ? 'border-[#6ed6f2] bg-sky-50/30' : 'border-slate-100'}`}
-              activeOpacity={0.7}
-            >
-              <View className="flex-row items-center">
-                <MaterialIcons name="account-balance-wallet" size={18} color="#0d9488" />
-                <Text className="text-xs font-bold text-slate-700 ml-2.5">Ví điện tử Ikigai (Liên kết)</Text>
-              </View>
-              {paymentMethod === 'ikigai' && <MaterialIcons name="check-circle" size={18} color="#00b4d8" />}
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              onPress={() => setPaymentMethod('momo')}
-              className={`flex-row items-center justify-between p-3 rounded-xl border ${paymentMethod === 'momo' ? 'border-[#6ed6f2] bg-sky-50/30' : 'border-slate-100'}`}
-              activeOpacity={0.7}
-            >
-              <View className="flex-row items-center">
-                <MaterialIcons name="payment" size={18} color="#c026d3" />
-                <Text className="text-xs font-bold text-slate-700 ml-2.5">Ví MoMo</Text>
-              </View>
-              {paymentMethod === 'momo' && <MaterialIcons name="check-circle" size={18} color="#00b4d8" />}
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              onPress={() => setPaymentMethod('card')}
-              className={`flex-row items-center justify-between p-3 rounded-xl border ${paymentMethod === 'card' ? 'border-[#6ed6f2] bg-sky-50/30' : 'border-slate-100'}`}
-              activeOpacity={0.7}
-            >
-              <View className="flex-row items-center">
-                <MaterialIcons name="credit-card" size={18} color="#2563EB" />
-                <Text className="text-xs font-bold text-slate-700 ml-2.5">Thẻ Visa / Mastercard</Text>
-              </View>
-              {paymentMethod === 'card' && <MaterialIcons name="check-circle" size={18} color="#00b4d8" />}
-            </TouchableOpacity>
+          <View className="flex-row items-center">
+            <Text className="text-[10px] text-[#00b4d8] font-black mr-1">Thay đổi</Text>
+            <MaterialIcons name="chevron-right" size={16} color="#94A3B8" />
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* 5. Cost Details Breakdown */}
         <View className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">

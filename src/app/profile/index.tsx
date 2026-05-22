@@ -116,7 +116,11 @@ export default function ProfileDashboardScreen() {
 
         {/* Quick Action Cards (Thanh toán, Ví Ikigai, Địa chỉ đã lưu) */}
         <View className="flex-row px-4 mt-3 gap-3">
-          <TouchableOpacity className="flex-1 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm items-center">
+          <TouchableOpacity 
+            onPress={() => router.push('/payment/methods')}
+            className="flex-1 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm items-center"
+            activeOpacity={0.7}
+          >
             <View className="w-9 h-9 rounded-full bg-blue-50 items-center justify-center mb-1.5">
               <MaterialIcons name="account-balance-wallet" size={18} color="#2563EB" />
             </View>
@@ -189,6 +193,7 @@ export default function ProfileDashboardScreen() {
         {/* SECTION: Thông tin cá nhân */}
         <View className="mx-4 mt-3 bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
           <Text className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Thông tin cá nhân</Text>
+          <MenuItem icon="history" label="Lịch sử hoạt động" onPress={() => router.push('/activity')} />
           <MenuItem icon="receipt" label="Thông tin hoá đơn" />
           <MenuItem icon="pin-drop" label="Địa chỉ đã lưu" />
         </View>
