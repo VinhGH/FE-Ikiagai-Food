@@ -1,158 +1,247 @@
-// ──────────────────────────────────────────────────────────────────
-// app/profile/index.tsx  ← chỉ render, data từ useUserProfile()
-// ──────────────────────────────────────────────────────────────────
-
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { useUserProfile } from '../../features/profile/hooks/useUserProfile';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useAuthStore } from '../../store/authStore';
 
-export default function ProfileScreen() {
+export default function ProfileDashboardScreen() {
+  const { user, logout } = useAuthStore();
   const router = useRouter();
-  const { user, logout } = useUserProfile();
 
   const handleLogout = async () => {
     await logout();
     router.replace('/(auth)/login');
   };
 
-  return (
-    <View className="flex-1 bg-background">
-      {/* Header */}
-      <View className="bg-primary-dark pt-14 pb-4 px-4 flex-row items-center">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="mr-4 w-11 h-11 items-center justify-center"
-          accessibilityLabel="Quay lại"
-          accessibilityRole="button"
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <MaterialIcons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <Text className="text-white text-xl font-bold flex-1">Tài khoản</Text>
-      </View>
+  const handleNavigateToEdit = () => {
+    router.push('/profile/edit');
+  };
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Profile Card – data từ authStore qua useUserProfile */}
-        <View className="bg-white rounded-2xl mx-4 mt-6 p-4 shadow-sm border border-outline-variant relative">
-          <View className="flex-row items-center mb-4">
-            <View className="w-16 h-16 bg-primary rounded-full items-center justify-center mr-4">
-              <MaterialIcons name="person" size={40} color="white" />
+  // Helper component for section rows
+  const MenuItem = ({ icon, label, onPress }: { icon: string; label: string; onPress?: () => void }) => (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      className="flex-row items-center justify-between py-3.5 border-b border-gray-100/50"
+    >
+      <View className="flex-row items-center flex-1">
+        <MaterialIcons name={icon as any} size={20} color="#64748B" />
+        <Text className="text-sm font-semibold text-slate-800 ml-3">{label}</Text>
+      </View>
+      <MaterialIcons name="chevron-right" size={20} color="#CBD5E1" />
+    </TouchableOpacity>
+  );
+
+  return (
+    <SafeAreaView className="flex-1 bg-slate-50" edges={['top']}>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+        
+        {/* Profile Card Header (Avatar, Name, Edit link) */}
+        <View className="mx-4 mt-3 bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex-row items-center justify-between">
+          <View className="flex-row items-center flex-1">
+            {/* Avatar Circle */}
+            <View className="w-12 h-12 rounded-full items-center justify-center mr-3 bg-[#6ed6f2] overflow-hidden border border-sky-100">
+              {user?.avatar ? (
+                <Image source={{ uri: user.avatar }} className="w-full h-full" />
+              ) : (
+                <MaterialIcons name="person" size={28} color="white" />
+              )}
             </View>
             <View className="flex-1">
-              {/* Hiển thị tên từ store, fallback về "Khách" nếu chưa login */}
-              <Text className="text-2xl font-extrabold text-on-surface">
-                {user?.name ?? 'Khách'}
-              </Text>
-              {user?.email ? (
-                <Text className="text-sm text-on-surface-variant mt-0.5">
-                  {user.email}
-                </Text>
-              ) : null}
-            </View>
-            <TouchableOpacity
-              className="bg-primary-light px-4 py-2 rounded-full min-h-[44px] justify-center"
-              activeOpacity={0.7}
-              accessibilityLabel="Chỉnh sửa hồ sơ"
-            >
-              <Text className="text-primary font-bold">Hồ sơ</Text>
-            </TouchableOpacity>
-          </View>
-          
-          <View className="flex-row gap-2 flex-wrap">
-            <View className="border border-outline-variant px-3 py-1.5 rounded-full flex-row items-center">
-              <MaterialIcons name="all-inclusive" size={16} color="#F59E0B" />
-              <Text className="text-xs text-on-surface-variant font-medium ml-1">Gói GrabUnlimited</Text>
-            </View>
-            <View className="border border-outline-variant px-3 py-1.5 rounded-full flex-row items-center">
-              <MaterialIcons name="workspace-premium" size={16} color="#F59E0B" />
-              <Text className="text-xs text-on-surface-variant font-medium ml-1">Theo dõi tiến độ</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Payment Methods */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="pl-4 mt-6 mb-2 overflow-visible">
-          <View className="bg-white border border-outline-variant rounded-2xl w-40 h-32 p-4 mr-4 shadow-sm">
-            <View className="flex-row justify-between mb-2">
-              <Text className="font-extrabold text-[#1A1F71] text-lg italic">VISA</Text>
-              <View className="bg-gray-100 px-2 py-0.5 rounded">
-                <Text className="text-[10px] text-gray-500 font-bold">Mặc định</Text>
-              </View>
-            </View>
-            <View className="flex-1 justify-end">
-              <Text className="text-on-surface font-bold">Visa</Text>
-              <Text className="text-on-surface-variant text-sm tracking-widest">• • 8069</Text>
-            </View>
-          </View>
-
-          <TouchableOpacity
-            className="bg-white border border-outline-variant rounded-2xl w-40 h-32 p-4 mr-4 shadow-sm justify-center items-center"
-            activeOpacity={0.7}
-            accessibilityLabel="Thêm phương thức thanh toán"
-          >
-            <View className="w-8 h-8 rounded-full border border-primary items-center justify-center mb-2">
-              <MaterialIcons name="add" size={20} color="#2D8A6B" />
-            </View>
-            <Text className="text-on-surface text-center text-sm font-medium px-2">Thêm phương thức thanh toán</Text>
-          </TouchableOpacity>
-        </ScrollView>
-
-        {/* Grab For Family / Business */}
-        <View className="flex-row px-4 mt-4 gap-4">
-          <View className="bg-white flex-1 border border-outline-variant rounded-2xl p-4 h-24 relative overflow-hidden shadow-sm">
-            <Text className="font-bold text-on-surface text-sm w-2/3">Grab cho Cả Nhà</Text>
-            <View className="absolute -bottom-2 -right-2 bg-primary-light w-14 h-14 rounded-full items-center justify-center">
-              <MaterialIcons name="groups" size={28} color="#2D8A6B" />
-            </View>
-          </View>
-          <View className="bg-white flex-1 border border-outline-variant rounded-2xl p-4 h-24 relative overflow-hidden shadow-sm">
-            <Text className="font-bold text-on-surface text-sm w-3/4">Trung tâm Doanh nghiệp</Text>
-            <View className="absolute -bottom-2 -right-2 bg-orange-100 w-14 h-14 rounded-full items-center justify-center">
-              <MaterialIcons name="business-center" size={24} color="#F59E0B" />
-            </View>
-          </View>
-        </View>
-
-        {/* Ưu đãi và tiết kiệm */}
-        <View className="bg-white mt-8">
-          <Text className="text-xl font-extrabold text-on-surface px-4 py-4 border-b border-outline-variant">Ưu đãi và tiết kiệm</Text>
-          
-          {[
-            { label: 'GrabXu', suffix: '0 GrabXu' },
-            { label: 'Gói Hội Viên', suffix: null },
-            { label: 'Rewards', suffix: null },
-            { label: 'Thử thách', suffix: null },
-          ].map(({ label, suffix }) => (
-            <TouchableOpacity
-              key={label}
-              className="flex-row items-center justify-between px-4 py-4 border-b border-outline-variant min-h-[56px]"
-              activeOpacity={0.7}
-            >
-              <Text className="text-base text-on-surface font-medium">{label}</Text>
               <View className="flex-row items-center">
-                {suffix ? (
-                  <Text className="text-on-surface-variant mr-2">{suffix}</Text>
-                ) : null}
-                <MaterialIcons name="chevron-right" size={24} color="#9CA3AF" />
+                <Text className="text-base font-black text-slate-800 tracking-tight">
+                  {user?.name ?? 'Thái Vinh'}
+                </Text>
+                <MaterialIcons name="verified" size={16} color="#F59E0B" className="ml-1" />
               </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Đăng xuất */}
-        <View className="px-4 mt-6 mb-12">
-          <TouchableOpacity
-            onPress={handleLogout}
-            className="border border-red-300 rounded-2xl py-4 items-center min-h-[56px] justify-center"
+              <Text className="text-xs text-slate-500 mt-0.5">
+                {user?.phone ?? '+84339464751'}
+              </Text>
+            </View>
+          </View>
+          
+          <TouchableOpacity 
+            onPress={handleNavigateToEdit}
+            className="flex-row items-center bg-slate-50 border border-slate-200/60 px-3 py-1.5 rounded-full"
             activeOpacity={0.7}
-            accessibilityLabel="Đăng xuất"
-            accessibilityRole="button"
           >
-            <Text className="text-red-500 font-bold text-base">Đăng xuất</Text>
+            <Text className="text-xs font-bold text-slate-600 mr-0.5">Hồ sơ</Text>
+            <MaterialIcons name="chevron-right" size={14} color="#64748B" />
           </TouchableOpacity>
         </View>
+
+        {/* GREEN FOOD RACE BANNER */}
+        <View className="mx-4 mt-3 bg-emerald-50 border border-emerald-100 rounded-2xl p-4 shadow-sm">
+          {/* Header */}
+          <View className="flex-row justify-between items-center mb-2">
+            <View className="flex-row items-center">
+              <MaterialIcons name="eco" size={16} color="#10B981" />
+              <Text className="text-emerald-800 text-xs font-black tracking-wider ml-1 uppercase">GREEN FOOD RACE</Text>
+            </View>
+            <TouchableOpacity className="bg-emerald-100/50 border border-emerald-200/30 px-2 py-0.5 rounded-full">
+              <Text className="text-emerald-700 text-[10px] font-bold">Xem tiến trình ›</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {/* Tagline */}
+          <View className="flex-row items-center mb-3">
+            <Text className="text-emerald-900 text-xs font-bold flex-1 leading-snug">
+              Đã giảm lượng CO2 tương đương
+            </Text>
+            <View className="bg-amber-100 border border-amber-200 rounded px-2.5 py-0.5">
+              <Text className="text-amber-800 text-xs font-black">70 cây xanh</Text>
+            </View>
+            <Text className="text-emerald-900 text-xs font-bold ml-1.5">quang hợp/ngày</Text>
+          </View>
+
+          {/* Stats columns */}
+          <View className="flex-row justify-between pt-3 border-t border-emerald-100/60">
+            <View className="flex-1 items-center border-r border-emerald-100/50 pr-1">
+              <Text className="text-[9px] text-emerald-700 font-medium text-center leading-tight">Đóng góp quỹ</Text>
+              <Text className="text-[9px] text-emerald-700 font-medium text-center leading-tight mb-1">Vì tương lai xanh</Text>
+              <Text className="text-[11px] text-emerald-800 font-black">1.300 VNĐ</Text>
+            </View>
+            <View className="flex-1 items-center border-r border-emerald-100/50 px-1">
+              <Text className="text-[9px] text-emerald-700 font-medium text-center leading-tight">Tổng KM</Text>
+              <Text className="text-[9px] text-emerald-700 font-medium text-center leading-tight mb-1">đã giao nhận</Text>
+              <Text className="text-[11px] text-emerald-800 font-black">88</Text>
+            </View>
+            <View className="flex-1 items-center pl-1">
+              <Text className="text-[9px] text-emerald-700 font-medium text-center leading-tight">KM tích lũy</Text>
+              <Text className="text-[9px] text-emerald-700 font-medium text-center leading-tight mb-1">năm 2026</Text>
+              <Text className="text-[11px] text-emerald-800 font-black">49</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Quick Action Cards (Thanh toán, Ví Ikigai, Địa chỉ đã lưu) */}
+        <View className="flex-row px-4 mt-3 gap-3">
+          <TouchableOpacity className="flex-1 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm items-center">
+            <View className="w-9 h-9 rounded-full bg-blue-50 items-center justify-center mb-1.5">
+              <MaterialIcons name="account-balance-wallet" size={18} color="#2563EB" />
+            </View>
+            <Text className="text-xs font-black text-slate-800">Thanh toán</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity className="flex-1 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm items-center">
+            <View className="w-9 h-9 rounded-full bg-teal-50 items-center justify-center mb-1.5">
+              <MaterialIcons name="business-center" size={18} color="#0D9488" />
+            </View>
+            <Text className="text-xs font-black text-slate-800" numberOfLines={1}>Doanh nghiệp</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity className="flex-1 bg-white border border-slate-100 rounded-2xl p-3 shadow-sm items-center">
+            <View className="w-9 h-9 rounded-full bg-emerald-50 items-center justify-center mb-1.5">
+              <MaterialIcons name="home" size={18} color="#059669" />
+            </View>
+            <Text className="text-xs font-black text-slate-800" numberOfLines={1}>Địa chỉ lưu</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Verify Email Alert */}
+        <TouchableOpacity 
+          onPress={handleNavigateToEdit}
+          className="mx-4 mt-3 bg-amber-50 border border-amber-100 rounded-2xl p-3 flex-row items-center gap-3"
+        >
+          <MaterialIcons name="warning" size={20} color="#D97706" />
+          <View className="flex-1">
+            <Text className="text-xs font-black text-amber-800">Xác thực email</Text>
+            <Text className="text-[10px] text-amber-700/80 mt-0.5 leading-snug">
+              Bạn có thể nhận Hóa đơn, Biên lai mua hàng qua email đã được xác thực.
+            </Text>
+          </View>
+          <MaterialIcons name="chevron-right" size={18} color="#D97706" />
+        </TouchableOpacity>
+
+        {/* Verify Identity Alert */}
+        <TouchableOpacity 
+          onPress={handleNavigateToEdit}
+          className="mx-4 mt-3 bg-sky-50 border border-sky-100 rounded-2xl p-3 flex-row items-center gap-3"
+        >
+          <MaterialIcons name="info" size={20} color="#6ed6f2" />
+          <View className="flex-1">
+            <Text className="text-xs font-black text-[#6ed6f2]">Xác thực danh tính</Text>
+            <Text className="text-[10px] text-sky-700/80 mt-0.5 leading-snug">
+              Vui lòng hoàn tất xác minh danh tính bằng cách quét mặt hoặc giấy tờ tùy thân để bảo vệ tài khoản tốt hơn.
+            </Text>
+          </View>
+          <MaterialIcons name="chevron-right" size={18} color="#6ed6f2" />
+        </TouchableOpacity>
+
+        {/* Banner Promo Card */}
+        <TouchableOpacity className="mx-4 mt-3 bg-sky-100/50 border border-sky-200/40 rounded-2xl p-3.5 flex-row items-center justify-between shadow-sm">
+          <View className="flex-1 pr-3">
+            <Text className="text-xs font-black text-sky-900">Quà tặng xịn dành tặng người thân...</Text>
+            <Text className="text-[10px] text-sky-700 mt-1">Quà nho nhỏ, trao gửi niềm vui to!</Text>
+          </View>
+          <MaterialIcons name="chevron-right" size={20} color="#0284c7" />
+        </TouchableOpacity>
+
+        {/* SECTION: Hạng thành viên & Ưu đãi */}
+        <View className="mx-4 mt-4 bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+          <Text className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Hạng thành viên & Ưu đãi</Text>
+          <MenuItem icon="card-giftcard" label="Gói hội viên" />
+          <MenuItem icon="confirmation-number" label="Mã khuyến mại" />
+          <MenuItem icon="star-border" label="Hạng thành viên" />
+          <MenuItem icon="share" label="Giới thiệu bạn bè" />
+        </View>
+
+        {/* SECTION: Thông tin cá nhân */}
+        <View className="mx-4 mt-3 bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+          <Text className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Thông tin cá nhân</Text>
+          <MenuItem icon="receipt" label="Thông tin hoá đơn" />
+          <MenuItem icon="pin-drop" label="Địa chỉ đã lưu" />
+        </View>
+
+        {/* SECTION: Hỗ trợ */}
+        <View className="mx-4 mt-3 bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+          <Text className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Hỗ trợ</Text>
+          <MenuItem icon="gavel" label="Điều khoản và Chính sách" />
+          <MenuItem icon="headset-mic" label="Trung tâm hỗ trợ" />
+          <MenuItem icon="business" label="Thông tin công ty" />
+        </View>
+
+        {/* SECTION: Cơ hội hợp tác */}
+        <View className="mx-4 mt-3 bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+          <Text className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Cơ hội hợp tác</Text>
+          <MenuItem icon="storefront" label="Hợp tác nhà hàng" />
+          <MenuItem icon="delivery-dining" label="Trở thành đối tác giao hàng" />
+        </View>
+
+        {/* SECTION: Cài đặt chung */}
+        <View className="mx-4 mt-3 bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
+          <Text className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Cài đặt chung</Text>
+          <MenuItem icon="language" label="Ngôn ngữ" />
+          <MenuItem icon="security" label="Đăng nhập & Bảo mật" />
+        </View>
+
+        {/* Satisfaction Rating Card */}
+        <TouchableOpacity className="mx-4 mt-3 bg-slate-100 border border-slate-200/50 rounded-2xl p-4 flex-row items-center justify-between">
+          <View className="flex-1 pr-4">
+            <Text className="text-xs font-black text-slate-800">Bạn có hài lòng với ứng dụng chứ?</Text>
+            <Text className="text-[10px] text-slate-500 mt-1 leading-snug">Phản hồi của bạn sẽ giúp Ikigai Food ngày càng hoàn thiện hơn.</Text>
+          </View>
+          <View className="w-8 h-8 rounded-full bg-white border border-slate-200 items-center justify-center">
+            <MaterialIcons name="chevron-right" size={20} color="#64748B" />
+          </View>
+        </TouchableOpacity>
+
+        {/* Logout Button */}
+        <TouchableOpacity 
+          onPress={handleLogout}
+          className="mx-4 mt-6 bg-white border border-red-200 rounded-2xl py-4 flex-row items-center justify-center gap-2 shadow-sm active:bg-red-50"
+          activeOpacity={0.7}
+        >
+          <MaterialIcons name="logout" size={18} color="#EF4444" />
+          <Text className="text-red-500 font-extrabold text-sm">Đăng xuất</Text>
+        </TouchableOpacity>
+
+        {/* Version Footer */}
+        <Text className="text-center text-[10px] text-slate-400 mt-6">
+          Ikigai Food - v5.1.0(517)
+        </Text>
+
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

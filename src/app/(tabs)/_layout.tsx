@@ -36,20 +36,46 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="payment"
+        name="map"
         options={{
-          title: 'Thanh toán',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="account-balance-wallet" size={size} color={color} />
+          title: 'Bản đồ',
+          tabBarIcon: ({ color, size, focused }) => (
+            <View className="relative w-10 h-10 items-center justify-center">
+              <View className={`absolute inset-0 rounded-full ${focused ? 'bg-[#e0f2fe]' : ''}`} />
+              <MaterialIcons name="location-on" size={size} color={color} />
+            </View>
+          ),
+        }}
+      />
+      
+      {/* SCAN: Center Floating Button */}
+      <Tabs.Screen
+        name="scan"
+        options={{
+          title: 'Quét món',
+          tabBarLabel: () => null, // Hide text for FAB
+          tabBarIcon: ({ focused }) => (
+            <View className="relative w-full items-center">
+              <View 
+                className={`absolute -top-7 w-16 h-16 rounded-full items-center justify-center 
+                  bg-[#6ed6f2]/90 border-4 border-white/80 shadow-xl shadow-cyan-400
+                  ${focused ? 'scale-110 bg-[#6ed6f2]' : ''}`}
+                style={{
+                  elevation: 10,
+                }}
+              >
+                <MaterialIcons name="qr-code-scanner" size={32} color="#FFF" />
+              </View>
+            </View>
           ),
         }}
       />
       <Tabs.Screen
-        name="activity"
+        name="heart"
         options={{
-          title: 'Hoạt động',
+          title: 'Yêu thích',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="receipt-long" size={size} color={color} />
+            <MaterialIcons name="favorite-border" size={size} color={color} />
           ),
         }}
       />
@@ -57,30 +83,25 @@ export default function TabsLayout() {
         name="messages"
         options={{
           title: 'Tin nhắn',
-          tabBarIcon: ({ color, size }) => (
-            <View>
+          tabBarIcon: ({ color, size, focused }) => (
+            <View className="relative w-10 h-10 items-center justify-center">
+              <View className={`absolute inset-0 rounded-full ${focused ? 'bg-[#e0f2fe]' : ''}`} />
               <MaterialIcons name="chat" size={size} color={color} />
               {/* Fake Badge */}
-              <View className="absolute -top-1 -right-2 bg-red-500 rounded-full w-4 h-4 items-center justify-center border border-white">
-                <Text className="text-white text-[9px] font-bold">2</Text>
+              <View className="absolute top-0 right-0 bg-red-500 rounded-full w-4 h-4 items-center justify-center border border-white">
+                <Text className="text-white text-[8px] font-black">2</Text>
               </View>
             </View>
           ),
         }}
       />
-      {/* Hide old tabs or profile if we don't need them in bottom bar */}
-      <Tabs.Screen
-        name="cart"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="notifications"
-        options={{ href: null }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{ href: null }}
-      />
+
+      {/* Hidden tabs */}
+      <Tabs.Screen name="payment" options={{ href: null }} />
+      <Tabs.Screen name="activity" options={{ href: null }} />
+      <Tabs.Screen name="cart" options={{ href: null }} />
+      <Tabs.Screen name="notifications" options={{ href: null }} />
+      <Tabs.Screen name="profile" options={{ href: null }} />
     </Tabs>
   );
 }

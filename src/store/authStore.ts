@@ -16,6 +16,9 @@ export type User = {
   email: string;
   phone?: string;
   avatar?: string;
+  salutation?: string;
+  gender?: string;
+  birthday?: string;
 };
 
 type AuthState = {

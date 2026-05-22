@@ -41,17 +41,15 @@ export default function ShopDetailScreen() {
     }
   }, [food]);
 
-  // UX Skill #78: Loading state
   if (isLoading) {
     return (
       <View className="flex-1 bg-background items-center justify-center">
-        <ActivityIndicator size="large" color="#2D8A6B" />
+        <ActivityIndicator size="large" color="#6ed6f2" />
         <Text className="text-on-surface-variant mt-3 text-sm">Đang tải...</Text>
       </View>
     );
   }
 
-  // UX Skill #80: Error recovery
   if (error || !food) {
     return (
       <SafeAreaView className="flex-1 bg-background items-center justify-center px-8">
@@ -64,10 +62,11 @@ export default function ShopDetailScreen() {
         </Text>
         <TouchableOpacity
           onPress={() => router.back()}
-          className="bg-primary px-8 py-3 rounded-full min-h-[48px] justify-center"
+          className="px-8 py-3 rounded-full min-h-[48px] justify-center"
           activeOpacity={0.8}
+          style={{ backgroundColor: '#6ed6f2' }}
         >
-          <Text className="text-white font-bold">Quay lại</Text>
+          <Text className="text-white font-bold text-center">Quay lại</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -80,7 +79,6 @@ export default function ShopDetailScreen() {
 
       if (section.maxSelections === 1) {
         // Radio button style: select this one (de-select others)
-        // If it's already selected and NOT required, we can toggle it off
         if (exists && !section.isRequired) {
           return { ...prev, [section.id]: [] };
         }
@@ -214,9 +212,9 @@ export default function ShopDetailScreen() {
 
           {/* Discount/Savings Badge */}
           {savings > 0 && (
-            <View className="flex-row items-center bg-orange-50 border border-orange-100 px-2 py-1 rounded-md self-start mt-3">
-              <MaterialIcons name="local-offer" size={12} color="#EA580C" />
-              <Text className="text-[#EA580C] text-[11px] font-extrabold ml-1">
+            <View className="flex-row items-center bg-sky-50 border border-sky-100 px-2 py-1 rounded-md self-start mt-3">
+              <MaterialIcons name="local-offer" size={12} color="#6ed6f2" />
+              <Text className="text-[#6ed6f2] text-[11px] font-extrabold ml-1">
                 Giảm {savings.toLocaleString('vi-VN')}đ
               </Text>
             </View>
@@ -240,8 +238,7 @@ export default function ShopDetailScreen() {
               return (
                 <View 
                   key={section.id} 
-                  className="bg-white/90 border border-slate-100 rounded-2xl mx-4 mt-3 p-4 shadow-sm"
-                  style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
+                  className="bg-white border border-slate-100 rounded-2xl mx-4 mt-3 p-4 shadow-sm"
                 >
                   {/* Section Title Header */}
                   <View className="flex-row items-center justify-between mb-2">
@@ -266,13 +263,24 @@ export default function ShopDetailScreen() {
                           className="flex-row items-center justify-between py-3.5 border-b border-gray-100 last:border-b-0"
                         >
                           <View className="flex-row items-center flex-1 pr-4">
-                            {/* Custom Selection Checkbox/Radio on the Left */}
+                            {/* Custom Selection Checkbox/Radio on the Left with #6ed6f2 theme color */}
                             {isSingleSelect ? (
-                              <View className={`w-5 h-5 rounded-full border items-center justify-center mr-3 ${isSelected ? 'border-primary bg-white' : 'border-gray-300 bg-white'}`}>
-                                {isSelected && <View className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                              <View 
+                                className="w-5 h-5 rounded-full border items-center justify-center mr-3 bg-white"
+                                style={{ borderColor: isSelected ? '#6ed6f2' : '#D1D5DB' }}
+                              >
+                                {isSelected && (
+                                  <View className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#6ed6f2' }} />
+                                )}
                               </View>
                             ) : (
-                              <View className={`w-5 h-5 rounded border items-center justify-center mr-3 ${isSelected ? 'bg-primary border-primary' : 'border-gray-300 bg-white'}`}>
+                              <View 
+                                className="w-5 h-5 rounded border items-center justify-center mr-3"
+                                style={{ 
+                                  backgroundColor: isSelected ? '#6ed6f2' : '#FFFFFF',
+                                  borderColor: isSelected ? '#6ed6f2' : '#D1D5DB'
+                                }}
+                              >
                                 {isSelected && <MaterialIcons name="check" size={14} color="white" />}
                               </View>
                             )}
@@ -300,8 +308,7 @@ export default function ShopDetailScreen() {
         {/* Shop Info Card */}
         {shop && (
           <View 
-            className="bg-white/90 border border-slate-100 rounded-2xl mx-4 mt-3 p-4 shadow-sm flex-row items-center gap-4"
-            style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
+            className="bg-white border border-slate-100 rounded-2xl mx-4 mt-3 p-4 shadow-sm flex-row items-center gap-4"
           >
             <Image
               source={{ uri: shop.image }}
@@ -313,17 +320,16 @@ export default function ShopDetailScreen() {
               <Text className="text-base font-extrabold text-on-surface">{shop.name}</Text>
               <Text className="text-xs text-on-surface-variant" numberOfLines={1}>{shop.address}</Text>
             </View>
-            <View className="bg-primary-light px-3 py-1.5 rounded-full flex-row items-center">
-              <MaterialIcons name="local-shipping" size={14} color="#2D8A6B" />
-              <Text className="text-xs text-primary font-bold ml-1">Freeship</Text>
+            <View className="px-3 py-1.5 rounded-full flex-row items-center" style={{ backgroundColor: '#e0f7fc' }}>
+              <MaterialIcons name="local-shipping" size={14} color="#6ed6f2" />
+              <Text className="text-xs font-bold ml-1" style={{ color: '#6ed6f2' }}>Freeship</Text>
             </View>
           </View>
         )}
 
         {/* Note Customization Section */}
         <View 
-          className="bg-white/90 border border-slate-100 rounded-2xl mx-4 mt-3 p-4 shadow-sm"
-          style={{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
+          className="bg-white border border-slate-100 rounded-2xl mx-4 mt-3 p-4 shadow-sm"
         >
           <View className="flex-row items-center gap-1.5 mb-3">
             <MaterialIcons name="edit-note" size={20} color="#4B5563" />
@@ -344,13 +350,12 @@ export default function ShopDetailScreen() {
 
       {/* Floating Bottom Action Sheet */}
       <View 
-        className="absolute bottom-0 left-0 right-0 bg-white/90 border-t border-slate-200/50 px-5 pt-4 pb-8 shadow-lg"
-        style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)' }}
+        className="absolute bottom-0 left-0 right-0 bg-white/95 border-t border-slate-100 px-5 pt-4 pb-8 shadow-lg"
       >
         {/* Savings Tip inside Action Sheet */}
         {totalSavings > 0 && (
-          <View className="bg-orange-50/80 border border-orange-100/50 rounded-full px-4 py-1.5 mb-3 self-center">
-            <Text className="text-orange-600 text-xs font-bold text-center">
+          <View className="bg-sky-50 border border-sky-100 rounded-full px-4 py-1.5 mb-3 self-center">
+            <Text className="text-[#6ed6f2] text-xs font-bold text-center">
               Bạn tiết kiệm được {totalSavings.toLocaleString('vi-VN')}đ sau khi giảm giá.
             </Text>
           </View>
@@ -364,7 +369,7 @@ export default function ShopDetailScreen() {
               className="w-9 h-9 rounded-full bg-white border border-slate-200/60 items-center justify-center shadow-sm"
               activeOpacity={0.7}
             >
-              <MaterialIcons name="remove" size={16} color="#0F5B47" />
+              <MaterialIcons name="remove" size={16} color="#6ed6f2" />
             </TouchableOpacity>
             
             <Text className="text-base font-extrabold text-on-surface px-4 min-w-[30px] text-center">
@@ -373,8 +378,9 @@ export default function ShopDetailScreen() {
             
             <TouchableOpacity
               onPress={handleIncrement}
-              className="w-9 h-9 rounded-full bg-primary items-center justify-center shadow-sm"
+              className="w-9 h-9 rounded-full items-center justify-center shadow-sm"
               activeOpacity={0.7}
+              style={{ backgroundColor: '#6ed6f2' }}
             >
               <MaterialIcons name="add" size={16} color="white" />
             </TouchableOpacity>
@@ -383,11 +389,12 @@ export default function ShopDetailScreen() {
           {/* Add To Cart Button */}
           <TouchableOpacity
             onPress={handleAddToCart}
-            className="flex-1 bg-primary h-12 rounded-full flex-row items-center justify-center shadow-md"
+            className="flex-1 h-12 rounded-full flex-row items-center justify-center shadow-md"
             activeOpacity={0.8}
+            style={{ backgroundColor: '#6ed6f2' }}
           >
             <Text className="text-white font-extrabold text-sm">
-              Thêm vào giỏ hàng - {totalPrice.toLocaleString('vi-VN')}
+              Thêm vào giỏ hàng - {totalPrice.toLocaleString('vi-VN')}đ
             </Text>
           </TouchableOpacity>
         </View>

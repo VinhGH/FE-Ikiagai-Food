@@ -9,24 +9,25 @@ export function HomeHeader() {
   const cartItemsCount = useCartStore((state) => state.getTotalItemsCount());
 
   return (
-    <View className="bg-primary-dark px-4 pt-12 pb-4 gap-3">
+    <View className="bg-[#e0f2fe] px-4 pt-12 pb-4 gap-3 border-b border-sky-100">
       {/* Top Address + Profile/Cart Row */}
       <View className="flex-row items-center justify-between">
         {/* Location selector */}
         <TouchableOpacity 
           className="flex-1 flex-row items-center gap-1.5"
           activeOpacity={0.8}
+          onPress={() => router.push('/address-picker')}
         >
-          <View className="bg-white/10 rounded-full w-8 h-8 items-center justify-center">
-            <MaterialIcons name="location-on" size={18} color="#6ed6f2" />
+          <View className="bg-sky-500/10 rounded-full w-8 h-8 items-center justify-center">
+            <MaterialIcons name="location-on" size={18} color="#0284c7" />
           </View>
           <View className="flex-1">
             <View className="flex-row items-center gap-0.5">
-              <Text className="text-[10px] text-white/70 uppercase font-bold tracking-wider">Giao đến</Text>
-              <MaterialIcons name="keyboard-arrow-down" size={12} color="white" />
+              <Text className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Giao đến</Text>
+              <MaterialIcons name="keyboard-arrow-down" size={12} color="#475569" />
             </View>
-            <Text className="text-white text-xs font-semibold" numberOfLines={1}>
-              12 Ngõ Tràng Tiền, Hoàn Kiếm, Hà Nội
+            <Text className="text-slate-850 text-xs font-extrabold" numberOfLines={1}>
+              36 Cát Linh, Cát Linh, Đống Đa, Hà Nội
             </Text>
           </View>
         </TouchableOpacity>
@@ -35,13 +36,13 @@ export function HomeHeader() {
         <View className="flex-row items-center gap-3">
           {/* Cart Icon with badge */}
           <TouchableOpacity
-            className="w-10 h-10 bg-white/10 rounded-full items-center justify-center relative"
+            className="w-10 h-10 bg-white rounded-full items-center justify-center relative shadow-sm border border-slate-100"
             onPress={() => router.push('/cart')}
             activeOpacity={0.8}
           >
-            <MaterialIcons name="shopping-cart" size={20} color="white" />
+            <MaterialIcons name="shopping-cart" size={20} color="#475569" />
             {cartItemsCount > 0 && (
-              <View className="absolute -top-1 -right-1 bg-red-500 rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center border border-primary-dark">
+              <View className="absolute -top-1 -right-1 bg-[#6ed6f2] rounded-full min-w-[18px] h-[18px] px-1 items-center justify-center border border-white">
                 <Text className="text-white text-[9px] font-bold leading-none">
                   {cartItemsCount}
                 </Text>
@@ -51,19 +52,20 @@ export function HomeHeader() {
 
           {/* Profile Avatar */}
           <TouchableOpacity 
-            className="bg-gray-200 rounded-full w-10 h-10 items-center justify-center border-2 border-white/20 overflow-hidden"
+            className="bg-white rounded-full w-10 h-10 items-center justify-center border border-slate-100 shadow-sm overflow-hidden"
             onPress={() => router.push('/profile')}
             activeOpacity={0.8}
           >
-            <MaterialIcons name="person" size={24} color="#6B7280" />
+            <MaterialIcons name="person" size={24} color="#475569" />
           </TouchableOpacity>
         </View>
       </View>
 
       {/* Search Bar Row */}
       <View className="w-full">
-        <SearchBar placeholder="Tìm món ngon, bún chả, trà sữa..." className="h-10" />
+        <SearchBar placeholder="Tìm món ăn, quán ăn hoặc trà sữa..." className="h-10" />
       </View>
     </View>
   );
 }
+
