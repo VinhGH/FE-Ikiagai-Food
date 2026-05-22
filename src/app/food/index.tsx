@@ -1,8 +1,6 @@
 import { View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { FoodHeader } from '../../features/food/components/FoodHeader';
-import { CategoryScroll } from '../../features/food/components/CategoryScroll';
-import { FilterGrid } from '../../features/food/components/FilterGrid';
+import { FoodHeader, CategoryScroll, FilterGrid } from '../../features/food';
 
 export default function FoodMainScreen() {
   return (

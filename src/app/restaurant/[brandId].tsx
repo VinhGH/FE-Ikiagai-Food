@@ -10,8 +10,7 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { getBrandById, getShopsByBrand } from '../../features/food/api/foodApi';
-import type { IBrand, IShop } from '../../features/food/types';
+import { getBrandById, getShopsByBrand, IBrand, IShop } from '../../features/food';
 
 export default function BrandBranchesScreen() {
   const { brandId } = useLocalSearchParams<{ brandId: string }>();

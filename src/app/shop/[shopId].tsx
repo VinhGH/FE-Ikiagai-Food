@@ -10,9 +10,7 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { getShopById, getFoods } from '../../features/food/api/foodApi';
-import type { IShop, IFood } from '../../features/food/types';
-import { ShopHeroCard } from '../../features/food/components/ShopHeroCard';
+import { getShopById, getFoods, IShop, IFood, ShopHeroCard } from '../../features/food';
 
 export default function ShopMenuScreen() {
   const { shopId } = useLocalSearchParams<{ shopId: string }>();

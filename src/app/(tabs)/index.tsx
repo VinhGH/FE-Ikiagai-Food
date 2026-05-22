@@ -9,12 +9,8 @@ import {
 } from 'react-native';
 import { memo, useCallback, useState, useMemo, useEffect } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
-import { HomeHeader }   from '../../features/home/components/HomeHeader';
-import { FoodCategorySection } from '../../features/home/components/FoodCategorySection';
-import { PromoBanner }  from '../../features/home/components/PromoBanner';
-import { useHomeFeed }  from '../../features/home/hooks/useHomeFeed';
-import { getFoods } from '../../features/food/api/foodApi';
-import type { IBrand, IFood }   from '../../features/food/types';
+import { HomeHeader, FoodCategorySection, PromoBanner, useHomeFeed } from '../../features/home';
+import { getFoods, IBrand, IFood } from '../../features/food';
 import { useRouter } from 'expo-router';
 
 // Format currency in VND

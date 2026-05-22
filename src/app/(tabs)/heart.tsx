@@ -3,8 +3,8 @@ import { View, Text, ScrollView, TouchableOpacity, Image, Alert, LayoutAnimation
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import type { IFood, IShop } from '../../features/food';
 import { useCartStore } from '../../store/cartStore';
-import type { IFood, IShop } from '../../features/food/types';
 
 // Enable LayoutAnimation on Android for smooth item removal
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
