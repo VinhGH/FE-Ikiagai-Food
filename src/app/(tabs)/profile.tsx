@@ -188,6 +188,7 @@ export default function ProfilePage() {
         {/* SECTION: Thông tin cá nhân */}
         <View className="mx-4 mt-3 bg-white rounded-2xl border border-slate-100 p-4 shadow-sm">
           <Text className="text-xs font-black text-slate-400 uppercase tracking-wider mb-2">Thông tin cá nhân</Text>
+          <MenuItem icon="history" label="Lịch sử hoạt động" onPress={() => router.push('/activity')} />
           <MenuItem icon="receipt" label="Thông tin hoá đơn" />
           <MenuItem icon="pin-drop" label="Địa chỉ đã lưu" />
         </View>
