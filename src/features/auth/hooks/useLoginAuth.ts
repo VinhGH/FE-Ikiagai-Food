@@ -1,2 +1,29 @@
-﻿// hello word Thao Le
-export const test = 'hello word Thao Le';
+import { useState } from 'react';
+import { loginApi, LoginPayload } from '../../../services/auth.service';
+import { useAuthStore } from '../../../store/authStore';
+
+export function useLoginAuth() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const login = useAuthStore((s) => s.login);
+
+  const mutate = async (payload: LoginPayload) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await loginApi(payload);
+      // Lưu token và user vào Zustand store và AsyncStorage
+      await login(response.accessToken, response.user);
+    } catch (err: any) {
+      console.error('[useLoginAuth] Đăng nhập thất bại:', err);
+      // Lấy message lỗi từ backend (có thể là string hoặc array của NestJS/Zod)
+      const msg = err.response?.data?.message || err.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
+      setError(Array.isArray(msg) ? msg.join(', ') : msg);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { mutate, isLoading, error, setError };
+}

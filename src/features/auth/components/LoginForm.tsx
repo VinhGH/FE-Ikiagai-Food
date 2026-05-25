@@ -1,25 +1,26 @@
+import React, { useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
-import { useAuthStore } from "../../../store/authStore";
+import { Text, TextInput, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { useLoginAuth } from "../hooks/useLoginAuth";
 
 export function LoginForm() {
   const router = useRouter();
-  const login = useAuthStore((s) => s.login);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const { mutate, isLoading, error, setError } = useLoginAuth();
 
   const handleLogin = async () => {
-    // TODO: Thay bằng API đăng nhập thật (gửi email + password lên server)
-    // Hiện tại dùng token giả để test luồng
-    const fakeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.fake-token";
-    const fakeUser = {
-      id: "1",
-      name: "Thao Le",
-      email: "thaole@gmail.com",
-      phone: "0123456789",
-    };
-
-    await login(fakeToken, fakeUser);
-    // Không cần router.replace vì _layout.tsx sẽ tự redirect khi isLoggedIn = true
+    if (!email.trim() || !password.trim()) {
+      setError("Vui lòng điền đầy đủ email và mật khẩu.");
+      return;
+    }
+    try {
+      await mutate({ email: email.trim(), password: password.trim() });
+    } catch {
+      // Error is already handled and set inside the hook
+    }
   };
 
   return (
@@ -53,6 +54,9 @@ export function LoginForm() {
               keyboardType="email-address"
               autoCapitalize="none"
               placeholderTextColor="#6e797d"
+              value={email}
+              onChangeText={setEmail}
+              editable={!isLoading}
             />
           </View>
         </View>
@@ -73,30 +77,47 @@ export function LoginForm() {
             <TextInput
               className="w-full pl-12 pr-12 py-3 bg-surface-container-low border border-outline-variant rounded-lg text-base text-on-surface"
               placeholder="••••••••"
-              secureTextEntry
+              secureTextEntry={!showPassword}
               placeholderTextColor="#6e797d"
+              value={password}
+              onChangeText={setPassword}
+              editable={!isLoading}
             />
             <TouchableOpacity
               className="absolute z-10"
               style={{ position: "absolute", right: 16 }}
+              onPress={() => setShowPassword(!showPassword)}
             >
-              <MaterialIcons name="visibility" size={20} color="#6e797d" />
+              <MaterialIcons name={showPassword ? "visibility-off" : "visibility"} size={20} color="#6e797d" />
             </TouchableOpacity>
           </View>
         </View>
 
-        <TouchableOpacity className="self-end mt-2">
+        <TouchableOpacity className="self-end mt-2" disabled={isLoading}>
           <Text className="text-primary font-medium">Quên mật khẩu?</Text>
         </TouchableOpacity>
+
+        {/* Error message */}
+        {error && (
+          <View className="p-3.5 bg-red-50 border border-red-200 rounded-lg mt-4">
+            <Text className="text-red-600 text-sm font-medium text-center">{error}</Text>
+          </View>
+        )}
 
         {/* Submit Button */}
         <TouchableOpacity
           className="w-full py-4 bg-primary-container rounded-lg items-center mt-6 shadow-sm active:opacity-80"
           onPress={handleLogin}
+          disabled={isLoading}
+          style={{ opacity: isLoading ? 0.7 : 1 }}
         >
-          <Text className="text-on-primary-container text-lg font-bold">
-            Đăng nhập
-          </Text>
+          {isLoading ? (
+            <ActivityIndicator color="#2D8A6B" />
+          ) : (
+            <Text className="text-on-primary-container text-lg font-bold">
+              Đăng nhập
+            </Text>
+          )}
         </TouchableOpacity>
       </View>
 

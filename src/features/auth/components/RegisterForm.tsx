@@ -1,9 +1,38 @@
-import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useRegister } from '../hooks/useRegister';
 
 export function RegisterForm() {
   const router = useRouter();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const { mutate, isLoading, error, setError } = useRegister();
+
+  const handleRegister = async () => {
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      setError("Vui lòng điền đầy đủ Họ tên, Email và Mật khẩu.");
+      return;
+    }
+    if (password.length < 8) {
+      setError("Mật khẩu phải dài tối thiểu 8 ký tự.");
+      return;
+    }
+    try {
+      await mutate({
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim() ? phone.trim() : undefined,
+        password: password.trim(),
+      });
+    } catch {
+      // Error is handled in the hook
+    }
+  };
 
   return (
     <View className="flex-1 w-full justify-center">
@@ -22,6 +51,9 @@ export function RegisterForm() {
               className="w-full pl-12 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg text-base text-on-surface"
               placeholder="Nguyễn Văn A"
               placeholderTextColor="#6e797d"
+              value={name}
+              onChangeText={setName}
+              editable={!isLoading}
             />
           </View>
         </View>
@@ -37,6 +69,9 @@ export function RegisterForm() {
               keyboardType="email-address"
               autoCapitalize="none"
               placeholderTextColor="#6e797d"
+              value={email}
+              onChangeText={setEmail}
+              editable={!isLoading}
             />
           </View>
         </View>
@@ -51,6 +86,9 @@ export function RegisterForm() {
               placeholder="0123 456 789"
               keyboardType="phone-pad"
               placeholderTextColor="#6e797d"
+              value={phone}
+              onChangeText={setPhone}
+              editable={!isLoading}
             />
           </View>
         </View>
@@ -63,18 +101,41 @@ export function RegisterForm() {
             <TextInput 
               className="w-full pl-12 pr-12 py-3 bg-surface-container-low border border-outline-variant rounded-lg text-base text-on-surface"
               placeholder="••••••••"
-              secureTextEntry
+              secureTextEntry={!showPassword}
               placeholderTextColor="#6e797d"
+              value={password}
+              onChangeText={setPassword}
+              editable={!isLoading}
             />
-            <TouchableOpacity className="absolute z-10" style={{ position: 'absolute', right: 16 }}>
-              <MaterialIcons name="visibility" size={20} color="#6e797d" />
+            <TouchableOpacity 
+              className="absolute z-10" 
+              style={{ position: 'absolute', right: 16 }}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <MaterialIcons name={showPassword ? "visibility-off" : "visibility"} size={20} color="#6e797d" />
             </TouchableOpacity>
           </View>
         </View>
 
+        {/* Error message */}
+        {error && (
+          <View className="p-3.5 bg-red-50 border border-red-200 rounded-lg mt-4">
+            <Text className="text-red-600 text-sm font-medium text-center">{error}</Text>
+          </View>
+        )}
+
         {/* Submit Button */}
-        <TouchableOpacity className="w-full py-4 bg-primary-container rounded-lg items-center mt-6 shadow-sm active:opacity-80">
-          <Text className="text-on-primary-container text-lg font-bold">Đăng ký ngay</Text>
+        <TouchableOpacity 
+          className="w-full py-4 bg-primary-container rounded-lg items-center mt-6 shadow-sm active:opacity-80"
+          onPress={handleRegister}
+          disabled={isLoading}
+          style={{ opacity: isLoading ? 0.7 : 1 }}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#2D8A6B" />
+          ) : (
+            <Text className="text-on-primary-container text-lg font-bold">Đăng ký ngay</Text>
+          )}
         </TouchableOpacity>
       </View>
 
